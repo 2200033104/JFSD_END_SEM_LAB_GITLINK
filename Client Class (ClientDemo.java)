@@ -1,0 +1,37 @@
+package com.klef.jfsd.exam;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
+import org.hibernate.cfg.Configuration;
+
+public class ClientDemo {
+    public static void main(String[] args) {
+        // Initialize SessionFactory and Session
+        Session session = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory().openSession();
+
+        // Start transaction
+        Transaction transaction = session.beginTransaction();
+
+        try {
+            // HQL Update Query with Positional Parameters
+            String hql = "UPDATE Department SET name = ?1, location = ?2 WHERE dept_id = ?3";
+            Query query = session.createQuery(hql);
+            query.setParameter(1, "Computer Science");
+            query.setParameter(2, "Main Block");
+            query.setParameter(3, 1); // Department ID
+
+            // Execute Update
+            int result = query.executeUpdate();
+            System.out.println("Rows affected: " + result);
+
+            // Commit Transaction
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+    }
+}
